@@ -1,7 +1,8 @@
 import * as THREE from "three";
 import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
 
-// scene.background = new THREE.Color('white');
+// create a list of balls
+let balls = [];
 
 //scene setup
 let scene = new THREE.Scene();
@@ -15,10 +16,8 @@ document.body.appendChild(renderer.domElement);
 
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.target.set(0, 5, 0);
-controls.update();
-//autoRotate seems not working? 
-// controls.autoRotate = true;
-// controls.autoRotateSpeed = 5;
+controls.autoRotate = true;
+controls.autoRotateSpeed = 3;
 
 
 //lighting setup
@@ -43,9 +42,10 @@ for (let i = 0; i < numSpheres; ++i) {
   const sphereMat = new THREE.MeshPhongMaterial({shininess: 150});
   sphereMat.color.setHSL(i * 0.9, 1, 0.6);
   const myBall = new THREE.Mesh(sphereGeo, sphereMat);
-  myBall.position.set(-sphereRadius, sphereRadius + 2, i * sphereRadius * -2);
+  myBall.position.set(-sphereRadius, sphereRadius + 5, i * sphereRadius * -2);
   myBall.receiveShadow = true;
   myBall.castShadow = true;
+  balls.push(myBall);
   scene.add(myBall);
 }
 
@@ -58,17 +58,18 @@ planeMesh.rotateX(-Math.PI/2);
 planeMesh.receiveShadow = true;
 scene.add(planeMesh);
 
-
-var speed = 1; //how to move in a singe frame
+var clock = new THREE.Clock();
 
 function loop() {
  
   renderer.render(scene, camera);
   window.requestAnimationFrame(loop);
+  controls.update();
 
-  myBall.position.y += dxPerFrame;
-  if(myBall.position.x >  10) dxPerFrame = -1; // if we're too far right, move towards the left
-  if(myBall.position.x < -10) dxPerFrame =  1; // if we're too far left, move towards the right again
+  let currentTime = clock.getElapsedTime();
+  balls.forEach( (ball,index) => { ball.position.y = 6+ Math.sin(currentTime +index*0.5) *3})
+  balls.forEach( (ball,index) => { ball.position.x = 1+ Math.sin(currentTime +index*0.9) *2})
+  balls.forEach( (ball,index) => { ball.position.z = -10+ Math.sin(currentTime +index*0.1) *5})
 }
 
 loop();
