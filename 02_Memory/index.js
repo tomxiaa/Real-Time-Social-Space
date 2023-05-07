@@ -101,6 +101,7 @@ function init() {
     loop();
 
     //Gravity
+<<<<<<< HEAD
     // const world = new CANNON.World({ gravity: new CANNON.Vec3(0, -9.81, 0) });
 
     // const planePhysMat = new CANNON.Material();
@@ -166,6 +167,73 @@ function init() {
     //     meshes.push(sphereMesh);
     //     bodies.push(sphereBody);
     //   });
+=======
+    const world = new CANNON.World({ gravity: new CANNON.Vec3(0, -9.81, 0) });
+
+    const planePhysMat = new CANNON.Material();
+    const planeBody = new CANNON.body({
+        type: CANNON.body.Static,
+        shape: new CANNON.Box(new CANNON.Vec3(5, 5, 0.001)),
+        material: planePhysMat
+    })
+    planeBody.quaternion.setFromEuler(-Math.PI / 2, 0, 0);
+    world.addBody(planeBody);
+
+    const mouse = new THREE.Vector2();
+    const intersectionPoint = new THREE.Vector3();
+    const planeNormal = new THREE.Vector3();
+    const plane = new THREE.plane();
+    const raycaster = new THREE.Raycaster();
+
+    window.addEventListener("mousemove", function (e){
+    mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+    mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+    planeNormal.copy(camera.position).normalize();
+    plane.setFromNormalAndCoplanarPoint(planeNormal, scene.position);
+    raycaster.setFromCamera(mouse, camera);
+    raycaster.ray.intersectPlane(plane, intersectionPoint);
+    });
+
+    const meshes = [];
+    const bodies = [];
+
+    window.addEventListener("click", function (e) {
+        const sphereGeo = new THREE.SphereGeometry(0.125, 30, 30);
+        const sphereMat = new THREE.MeshStandardMaterial({
+          color: Math.random() * 0xffffff,
+          metalness: 0,
+          roughness: 0
+        });
+        const sphereMesh = new THREE.Mesh(sphereGeo, sphereMat);
+        scene.add(sphereMesh);
+        //sphereMesh.position.copy(intersectionPoint);
+        sphereMesh.castShadow = true;
+      
+        const spherePhysMat = new CANNON.Material();
+        const sphereBody = new CANNON.Body({
+          mass: 0.3,
+          shape: new CANNON.Sphere(0.125),
+          position: new CANNON.Vec3(
+            intersectionPoint.x,
+            intersectionPoint.y,
+            intersectionPoint.z
+          ),
+          material: spherePhysMat
+        });
+        world.addBody(sphereBody);
+      
+        const planeSphereContactMat = new CANNON.ContactMaterial(
+          planePhysMat,
+          spherePhysMat,
+          { restitution: 0.3 }
+        );
+      
+        world.addContactMaterial(planeSphereContactMat);
+      
+        meshes.push(sphereMesh);
+        bodies.push(sphereBody);
+      });
+>>>>>>> origin
 
 }
 
@@ -174,10 +242,41 @@ function addBackground(){
     let backgroundColor = new THREE.Color(0xff91f9);
     renderer.setClearColor(backgroundColor);
 }
+<<<<<<< HEAD
 
 function loadModel(){
     let loader = new GLTFLoader();
        loader.load('./Asset/milkcow.gltf', function (gltf) {
+=======
+// const cow = new THREE.Object3D();
+// const cow2 = new THREE.Object3D();
+// let loader = new GLTFLoader();
+//        loader.load('./Asset/Cow.gltf', loadModel);
+// function loadModel(gltf){
+//     const box = new THREE.Box3().setFromObject(gltf.scene);
+//     const c = box.getCenter( new THREE.Vector3());
+//     const size = box.getSize( new THREE.Vector3());
+//     gltf.scene.position.set(-c.x, size.y / 2 - c.y, -c.z);
+//     cow.add(gltf.scene);
+//     cow2.add(gltf.scene.clone());
+// }
+
+// cow.scale.set( 1, 1, 1 ); // because gltf.scene is very big
+// cow.position.set( 1, 1.5, 0 );
+// cow.rotation.y = Math.PI;
+// scene.add( cow );
+
+// cow2.scale.set( 2, 2, 2 ); // because gltf.scene is very big
+// cow2.position.set( 0,1.25,0);
+// cow2.rotation.x = 0.8; // radiant
+
+// scene.add( cow2 );
+
+function loadModel(){
+    let mixer;
+    let loader = new GLTFLoader();
+       loader.load('./Asset/Cow.gltf', function (gltf) {
+>>>>>>> origin
            let model = gltf.scene;
            var scale = 0.075;
            model.scale.set(scale,scale,scale);
